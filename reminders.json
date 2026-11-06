@@ -1,0 +1,54 @@
+[
+  {
+    "id": "aeb98618-4e20-4913-af9f-2fae81ad4fca",
+    "patientName": "saranya",
+    "phone": "+918500949696",
+    "medicineName": "Dolo",
+    "dosage": "1",
+    "times": [
+      "18:33"
+    ],
+    "remindBeforeMinutes": 0,
+    "frequency": "once",
+    "onceDate": "2026-11-06",
+    "channel": "all",
+    "lastSentKeys": [
+      "2026-11-06_18:33"
+    ],
+    "createdAt": "2026-11-06T13:02:24.923Z"
+  },
+  {
+    "id": "22da05cf-d3b0-4d67-92d6-055d51ee2f8c",
+    "patientName": "saranya",
+    "phone": "+918500949696",
+    "medicineName": "Combiflame",
+    "dosage": "2",
+    "times": [
+      "20:34"
+    ],
+    "remindBeforeMinutes": 0,
+    "frequency": "once",
+    "onceDate": "2026-11-06",
+    "channel": "all",
+    "lastSentKeys": [],
+    "createdAt": "2026-11-06T15:04:08.061Z"
+  },
+  {
+    "id": "96e14d4b-39f2-486a-b47c-a8467b8f81ec",
+    "patientName": "saranya",
+    "phone": "+918500949696",
+    "medicineName": "Combiflame",
+    "dosage": "2",
+    "times": [
+      "20:36"
+    ],
+    "remindBeforeMinutes": 0,
+    "frequency": "once",
+    "onceDate": "2026-11-06",
+    "channel": "all",
+    "lastSentKeys": [
+      "2026-11-06_20:36"
+    ],
+    "createdAt": "2026-11-06T15:05:25.618Z"
+  }
+]

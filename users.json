@@ -1,0 +1,16 @@
+[
+  {
+    "id": "606c5dd3-a04a-4ac5-815e-2f04d9eed2db",
+    "firstName": "Saranya",
+    "lastName": "Konijeti",
+    "email": "saranyakonijeti6@gmail.com",
+    "passwordHash": "$2b$10$Bvioq.W1tIGPjySg61AhmeLm6qMIsr7kTApCQrI3NAC8K8u2wmlrG"
+  },
+  {
+    "id": "7760b774-c2f0-4c5c-88f2-bf515d2e6e95",
+    "firstName": "Pavani",
+    "lastName": "B",
+    "email": "24b01a0566@svecw.edu.in",
+    "passwordHash": "$2b$10$iGeU3E.zMMA/omIaH3W4g.HpKQHiS03.Kgz/FsPLFAg36sxa13VJ6"
+  }
+]

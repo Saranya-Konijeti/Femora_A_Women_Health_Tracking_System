@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Period Cycle Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FFCCE5 0%, #E9D5FF 50%, #F8F4FF 100%);
+            min-height: 100vh;
+            padding: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: #FFFFFF;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.15);
+            padding: 30px;
+            max-width: 950px;
+            width: 100%;
+        }
+
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #8B5CF6; font-size: 2.5rem; margin-bottom: 10px; }
+        .header p { color: #6B7280; font-size: 1rem; }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .controls button {
+            background: linear-gradient(135deg, #EC4899, #8B5CF6);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 22px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: .3s;
+        }
+
+        .controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, .3);
+            background: linear-gradient(135deg, #DB2777, #7C3AED);
+        }
+
+        .month-year {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #7C3AED;
+            min-width: 220px;
+            text-align: center;
+        }
+
+        .cycle-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .info-box {
+            flex: 1;
+            min-width: 180px;
+            background: #FFFFFF;
+            border: 2px solid #FBCFE8;
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, .05);
+        }
+
+        .info-box label { display: block; color: #8B5CF6; font-weight: 600; margin-bottom: 8px; }
+        .info-box input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #E9D5FF;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: .3s;
+        }
+        .info-box input:focus {
+            outline: none;
+            border-color: #8B5CF6;
+            box-shadow: 0 0 10px rgba(139, 92, 246, .25);
+        }
+        .info-box .hint { font-size: 12px; color: #9CA3AF; margin-top: 6px; }
+
+        .instructions {
+            background: #F5F3FF;
+            border: 2px dashed #C4B5FD;
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            color: #5B21B6;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .day-header {
+            background: linear-gradient(135deg, #EC4899, #8B5CF6);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #F3E8FF;
+            border-radius: 15px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: .3s;
+            position: relative;
+        }
+
+        .day:hover { background: #FDF4FF; border-color: #8B5CF6; transform: scale(1.05); }
+        .day.other-month { color: #C4B5FD; background: #FAF5FF; cursor: default; }
+        .day.marked { background: #EC4899; border-color: #EC4899; color: white; font-weight: bold; }
+        .day.predicted { background: #FBBF24; border-color: #FBBF24; color: white; font-weight: bold; }
+        .day.fertile { background: #34D399; border-color: #34D399; color: white; font-weight: bold; }
+        .day.today { border: 3px solid #8B5CF6; }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            background: #FFF7FB;
+            border: 2px solid #FBCFE8;
+            border-radius: 18px;
+            padding: 18px;
+        }
+        .legend-item { display: flex; align-items: center; gap: 10px; }
+        .legend-color { width: 22px; height: 22px; border-radius: 6px; }
+        .legend-item.marked .legend-color { background: #EC4899; }
+        .legend-item.predicted .legend-color { background: #FBBF24; }
+        .legend-item.fertile .legend-color { background: #34D399; }
+
+        .panel-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .predictions, .history, .variability {
+            background: #FFF7FB;
+            border: 2px solid #FBCFE8;
+            border-radius: 18px;
+            padding: 20px;
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .predictions h2, .history h2, .variability h2 { color: #8B5CF6; margin-bottom: 15px; font-size: 1.2rem; }
+        .predictions ul, .history ul { list-style: none; max-height: 240px; overflow-y: auto; }
+
+        .predictions li, .history li {
+            background: white;
+            border-left: 5px solid #8B5CF6;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            color: #374151;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .predictions li strong, .history li strong { color: #EC4899; }
+
+        .history li button {
+            background: #FEE2E2;
+            color: #B91C1C;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .history li button:hover { background: #FCA5A5; }
+
+        .variability p { font-size: 14px; color: #374151; line-height: 1.7; }
+        .variability .warning {
+            background: #FEF3C7;
+            border-left: 5px solid #F59E0B;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 10px;
+            color: #92400E;
+            font-size: 13.5px;
+        }
+
+        .empty-note { color: #9CA3AF; text-align: center; font-size: 14px; padding: 10px; }
+
+        @media(max-width:768px) {
+            .container { padding: 20px; }
+            .controls { flex-direction: column; }
+            .month-year { width: 100%; }
+            .legend { flex-direction: column; }
+            .panel-row { flex-direction: column; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Period Cycle Tracker</h1>
+            <p>Mark each period's start date on the calendar — the tracker learns your pattern over time.</p>
+        </div>
+
+        <div class="cycle-info">
+            <div class="info-box">
+                <label for="cycleLength">Typical cycle length (days):</label>
+                <input type="number" id="cycleLength" min="15" max="60" value="28">
+                <div class="hint">Used only until you've logged 2+ real periods — after that, predictions use your actual history.</div>
+            </div>
+            <div class="info-box">
+                <label for="periodLength">Period duration (days):</label>
+                <input type="number" id="periodLength" min="1" max="14" value="5">
+                <div class="hint">Applied when you mark a new period start.</div>
+            </div>
+            <div class="info-box">
+                <label>Last logged period start:</label>
+                <input type="text" id="lastPeriodDate" readonly placeholder="No periods logged yet">
+            </div>
+        </div>
+
+        <div class="instructions">
+            <strong>How to use:</strong> Click a date to log it as a period start (it'll mark that date + your period duration automatically). Click an already-marked start date again to remove that entry. You can log periods across any month — click "Previous"/"Next" to navigate, and every period you've logged stays saved.
+        </div>
+
+        <div class="controls">
+            <button onclick="previousMonth()">← Previous</button>
+            <div class="month-year" id="monthYear"></div>
+            <button onclick="nextMonth()">Next →</button>
+            <button onclick="resetTracker()" style="background: #dc3545;">Reset All</button>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item marked"><div class="legend-color"></div><span>Logged period days</span></div>
+            <div class="legend-item predicted"><div class="legend-color"></div><span>Predicted period</span></div>
+            <div class="legend-item fertile"><div class="legend-color"></div><span>Estimated fertile window</span></div>
+        </div>
+
+        <div class="calendar" id="calendar"></div>
+
+        <div class="panel-row">
+            <div class="history">
+                <h2>Logged period history</h2>
+                <ul id="historyList"></ul>
+            </div>
+            <div class="predictions">
+                <h2>Next 3 predicted periods</h2>
+                <ul id="predictionsList"></ul>
+            </div>
+            <div class="variability">
+                <h2>Cycle pattern</h2>
+                <div id="variabilityInfo"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDate = new Date();
+
+        // periods: array of { start: "YYYY-MM-DD", length: number }
+        // This is the actual fix — every logged period is kept, not overwritten.
+        let periods = JSON.parse(localStorage.getItem('periods')) || [];
+        let defaultCycleLength = parseInt(localStorage.getItem('defaultCycleLength')) || 28;
+        let defaultPeriodLength = parseInt(localStorage.getItem('defaultPeriodLength')) || 5;
+
+        const cycleInput = document.getElementById('cycleLength');
+        const periodInput = document.getElementById('periodLength');
+        const lastPeriodInput = document.getElementById('lastPeriodDate');
+
+        cycleInput.value = defaultCycleLength;
+        periodInput.value = defaultPeriodLength;
+
+        cycleInput.addEventListener('change', () => {
+            defaultCycleLength = parseInt(cycleInput.value) || 28;
+            localStorage.setItem('defaultCycleLength', defaultCycleLength);
+            renderCalendar();
+        });
+        periodInput.addEventListener('change', () => {
+            defaultPeriodLength = parseInt(periodInput.value) || 5;
+            localStorage.setItem('defaultPeriodLength', defaultPeriodLength);
+        });
+
+        function getDayString(date) {
+            const d = new Date(date);
+            d.setHours(0, 0, 0, 0);
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function sortedPeriods() {
+            return [...periods].sort((a, b) => new Date(a.start) - new Date(b.start));
+        }
+
+        function savePeriods() {
+            localStorage.setItem('periods', JSON.stringify(periods));
+        }
+
+        // Build the set of all "marked" (logged) days from every stored period
+        function getMarkedDaySet() {
+            const set = new Set();
+            periods.forEach((p) => {
+                const start = new Date(p.start);
+                for (let i = 0; i < p.length; i++) {
+                    const d = new Date(start);
+                    d.setDate(start.getDate() + i);
+                    set.add(getDayString(d));
+                }
+            });
+            return set;
+        }
+
+        // Real cycle lengths, computed from gaps between consecutive logged start dates
+        function getActualCycleLengths() {
+            const sorted = sortedPeriods();
+            const lengths = [];
+            for (let i = 1; i < sorted.length; i++) {
+                const prevStart = new Date(sorted[i - 1].start);
+                const thisStart = new Date(sorted[i].start);
+                const diffDays = Math.round((thisStart - prevStart) / (1000 * 60 * 60 * 24));
+                if (diffDays > 0) lengths.push(diffDays);
+            }
+            return lengths;
+        }
+
+        // Adaptive average: uses the last up-to-6 real cycles if available,
+        // otherwise falls back to the user's manually entered typical length.
+        function getPredictionCycleLength() {
+            const lengths = getActualCycleLengths();
+            if (lengths.length === 0) return defaultCycleLength;
+            const recent = lengths.slice(-6);
+            const avg = recent.reduce((sum, v) => sum + v, 0) / recent.length;
+            return Math.round(avg);
+        }
+
+        function getCycleVariability() {
+            const lengths = getActualCycleLengths();
+            if (lengths.length < 2) return null;
+            const avg = lengths.reduce((s, v) => s + v, 0) / lengths.length;
+            const variance = lengths.reduce((s, v) => s + Math.pow(v - avg, 2), 0) / lengths.length;
+            const stdDev = Math.sqrt(variance);
+            return { avg, stdDev, min: Math.min(...lengths), max: Math.max(...lengths), count: lengths.length };
+        }
+
+        function toggleDate(dateString) {
+            const existingIndex = periods.findIndex((p) => p.start === dateString);
+            if (existingIndex !== -1) {
+                // Clicking an already-logged start date removes that entry
+                periods.splice(existingIndex, 1);
+            } else {
+                periods.push({ start: dateString, length: defaultPeriodLength });
+            }
+            savePeriods();
+            renderCalendar();
+        }
+
+        function isPredictedPeriod(date, predictedRanges) {
+            const dateString = getDayString(date);
+            return predictedRanges.some((r) => dateString >= r.startStr && dateString <= r.endStr);
+        }
+
+        function isFertileWindow(date, ovulationDates) {
+            const dateString = getDayString(date);
+            return ovulationDates.some((ov) => {
+                const fertileStart = new Date(ov);
+                fertileStart.setDate(fertileStart.getDate() - 5);
+                const fertileEnd = new Date(ov);
+                fertileEnd.setDate(fertileEnd.getDate() + 1);
+                const d = new Date(dateString);
+                return d >= fertileStart && d <= fertileEnd;
+            });
+        }
+
+        function getPredictedPeriodsAndOvulations() {
+            const sorted = sortedPeriods();
+            if (sorted.length === 0) return { ranges: [], ovulations: [] };
+
+            const lastPeriod = sorted[sorted.length - 1];
+            const predictionCycleLength = getPredictionCycleLength();
+            const lastStart = new Date(lastPeriod.start);
+
+            const ranges = [];
+            const ovulations = [];
+
+            for (let i = 1; i <= 3; i++) {
+                const nextStart = new Date(lastStart);
+                nextStart.setDate(nextStart.getDate() + i * predictionCycleLength);
+
+                const nextEnd = new Date(nextStart);
+                nextEnd.setDate(nextEnd.getDate() + (lastPeriod.length || defaultPeriodLength) - 1);
+
+                ranges.push({
+                    start: nextStart,
+                    end: nextEnd,
+                    startStr: getDayString(nextStart),
+                    endStr: getDayString(nextEnd),
+                });
+
+                // Ovulation estimated ~14 days before the *next* predicted period,
+                // which is generally more reliable than counting forward from the last one.
+                const ovulation = new Date(nextStart);
+                ovulation.setDate(ovulation.getDate() - 14);
+                ovulations.push(ovulation);
+            }
+
+            return { ranges, ovulations };
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach((day) => {
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = day;
+                calendar.appendChild(header);
+            });
+
+            const markedSet = getMarkedDaySet();
+            const { ranges, ovulations } = getPredictedPeriodsAndOvulations();
+
+            let currentDay = new Date(startDate);
+            for (let i = 0; i < 42; i++) {
+                const dayElement = document.createElement('div');
+                const dayString = getDayString(currentDay);
+                const isCurrentMonth = currentDay.getMonth() === month;
+                const isToday = dayString === getDayString(new Date());
+
+                dayElement.className = 'day';
+                if (!isCurrentMonth) dayElement.classList.add('other-month');
+                if (isToday) dayElement.classList.add('today');
+
+                if (markedSet.has(dayString)) {
+                    dayElement.classList.add('marked');
+                } else if (isPredictedPeriod(currentDay, ranges)) {
+                    dayElement.classList.add('predicted');
+                } else if (isFertileWindow(currentDay, ovulations)) {
+                    dayElement.classList.add('fertile');
+                }
+
+                dayElement.textContent = currentDay.getDate();
+                if (isCurrentMonth) {
+                    dayElement.onclick = () => toggleDate(dayString);
+                }
+
+                calendar.appendChild(dayElement);
+                currentDay.setDate(currentDay.getDate() + 1);
+            }
+
+            updateMonthYear();
+            updateLastPeriodDisplay();
+            updateHistory();
+            updatePredictions(ranges);
+            updateVariability();
+        }
+
+        function updateMonthYear() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.toLocaleString('default', { month: 'long' });
+            document.getElementById('monthYear').textContent = `${month} ${year}`;
+        }
+
+        function updateLastPeriodDisplay() {
+            const sorted = sortedPeriods();
+            if (sorted.length === 0) {
+                lastPeriodInput.value = '';
+                return;
+            }
+            const last = sorted[sorted.length - 1];
+            lastPeriodInput.value = new Date(last.start).toLocaleDateString();
+        }
+
+        function updateHistory() {
+            const listEl = document.getElementById('historyList');
+            const sorted = sortedPeriods().slice().reverse(); // most recent first
+
+            if (sorted.length === 0) {
+                listEl.innerHTML = '<div class="empty-note">No periods logged yet. Click a date on the calendar to start.</div>';
+                return;
+            }
+
+            listEl.innerHTML = '';
+            sorted.forEach((p) => {
+                const start = new Date(p.start);
+                const end = new Date(start);
+                end.setDate(end.getDate() + (p.length || defaultPeriodLength) - 1);
+
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span><strong>${start.toLocaleDateString()}</strong> – ${end.toLocaleDateString()} (${p.length || defaultPeriodLength} days)</span>
+                    <button onclick="toggleDate('${p.start}')">Remove</button>
+                `;
+                listEl.appendChild(li);
+            });
+        }
+
+        function updatePredictions(ranges) {
+            const listEl = document.getElementById('predictionsList');
+            if (ranges.length === 0) {
+                listEl.innerHTML = '<div class="empty-note">Log at least one period to see predictions.</div>';
+                return;
+            }
+
+            listEl.innerHTML = '';
+            ranges.forEach((r, i) => {
+                const ovulation = new Date(r.start);
+                ovulation.setDate(ovulation.getDate() - 14);
+
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span><strong>Cycle ${i + 1}:</strong> ${r.start.toLocaleDateString()} – ${r.end.toLocaleDateString()}<br>
+                    <span style="font-size:12.5px; color:#6B7280;">Estimated ovulation: ${ovulation.toLocaleDateString()}</span></span>
+                `;
+                listEl.appendChild(li);
+            });
+        }
+
+        function updateVariability() {
+            const infoEl = document.getElementById('variabilityInfo');
+            const v = getCycleVariability();
+            const lengths = getActualCycleLengths();
+
+            if (lengths.length === 0) {
+                infoEl.innerHTML = `<p class="empty-note">Log at least 2 periods so the tracker can learn your actual cycle length instead of guessing.</p>`;
+                return;
+            }
+
+            if (!v) {
+                infoEl.innerHTML = `<p>Only one real gap logged so far (${lengths[0]} days). Log a couple more periods for a reliable pattern.</p>`;
+                return;
+            }
+
+            let html = `<p>Based on your last ${v.count} logged cycle(s):<br>
+                Average: <strong>${Math.round(v.avg)} days</strong><br>
+                Range: ${v.min}–${v.max} days</p>`;
+
+            if (v.stdDev > 7) {
+                html += `<div class="warning">
+                    Your cycle length has varied quite a bit (up to ${v.max - v.min} days difference between cycles).
+                    This kind of irregularity can happen for many reasons — stress, lifestyle changes, or underlying
+                    conditions like PCOS or thyroid issues. Predictions here are rough estimates only; if this pattern
+                    continues, it's worth discussing with a gynecologist.
+                </div>`;
+            } else if (v.stdDev > 3) {
+                html += `<p style="margin-top:8px; color:#92400E; font-size:13px;">Some natural variation in your cycle — predictions will keep adjusting as you log more.</p>`;
+            } else {
+                html += `<p style="margin-top:8px; color:#065F46; font-size:13px;">Your cycle looks fairly consistent — predictions should be reasonably reliable.</p>`;
+            }
+
+            infoEl.innerHTML = html;
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function resetTracker() {
+            if (confirm('Are you sure you want to reset all logged periods? This cannot be undone.')) {
+                periods = [];
+                defaultCycleLength = 28;
+                defaultPeriodLength = 5;
+                localStorage.clear();
+                currentDate = new Date();
+                cycleInput.value = 28;
+                periodInput.value = 5;
+                renderCalendar();
+            }
+        }
+
+        renderCalendar();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Women's Health</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            font-family: 'Segoe UI', Arial, sans-serif;
+           background:transparent;
+        }
+
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -10;
+            overflow: hidden;
+        }
+
+        .video-bg video{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transform:translate(-50%,-50%);
+}
+
+        .overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+        rgba(220, 181, 240, 0.45),
+        rgba(233, 162, 219, 0.5)
+    );
+    z-index: -1;
+}
+
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 0;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.42);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 36px;
+            padding: 45px 35px;
+            width: 92%;
+            max-width: 1080px;
+            box-shadow: 0 30px 80px rgba(126, 81, 148, 0.18);
+            text-align: center;
+            backdrop-filter: blur(18px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            inset: -40px;
+            background: radial-gradient(circle at top right, rgba(255, 182, 193, 0.28), transparent 30%),
+                radial-gradient(circle at bottom left, rgba(186, 104, 200, 0.24), transparent 28%);
+            z-index: -1;
+        }
+
+        h1 {
+            color: #7f4a8a;
+            font-size: 3rem;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-shadow: 0 6px 18px rgba(142, 92, 169, 0.15);
+        }
+
+        p {
+            color: #58405b;
+            font-size: 1rem;
+            margin-bottom: 35px;
+            line-height: 1.7;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(220px, 1fr));
+            gap: 26px;
+            margin-top: 40px;
+            align-items: stretch;
+            grid-auto-rows: 1fr;
+        }
+
+        .feature-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            border-radius: 28px;
+            padding: 30px 22px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+            box-shadow: 0 18px 40px rgba(131, 68, 143, 0.12);
+            backdrop-filter: blur(12px);
+            min-height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 55px rgba(148, 78, 146, 0.24);
+            background: rgba(255, 250, 255, 0.75);
+        }
+
+        .icon {
+            font-size: 52px;
+            margin-bottom: 18px;
+        }
+
+        .feature-card h3 {
+            color: #844b9c;
+            margin-bottom: 12px;
+            font-size: 1.6rem;
+        }
+
+        .feature-card p {
+            color: #5e4a67;
+            font-size: 0.98rem;
+            line-height: 1.7;
+        }
+
+        .feature-card button {
+            margin-top: auto;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #ee90cb, #a75dc5);
+            color: #ffffff;
+            font-size: 0.98rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+            box-shadow: 0 12px 28px rgba(167, 92, 197, 0.18);
+        }
+
+        .feature-card button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 32px rgba(167, 92, 197, 0.28);
+            opacity: 0.98;
+        }
+
+        .modules {
+            margin-top: 40px;
+            display: grid;
+            gap: 22px;
+        }
+
+        .module-section {
+            background: rgba(255, 255, 255, 0.56);
+            border: 1px solid rgba(255, 255, 255, 0.72);
+            border-radius: 28px;
+            padding: 32px 28px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 18px 40px rgba(138, 81, 146, 0.12);
+            text-align: left;
+        }
+
+        .module-section h2 {
+            color: #6f3f7f;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .module-section p {
+            color: #5a4460;
+            line-height: 1.85;
+            font-size: 1rem;
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            padding: 10px 17px;
+            border-radius: 999px;
+            background: rgba(255, 240, 245, 0.85);
+            color: #a14a93;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            font-size: 0.92rem;
+        }
+
+
+        @media (max-width: 720px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2.4rem;
+            }
+
+            .feature-card {
+                padding: 26px 18px;
+            }
+            button {
+            width: 100%;
+            padding: 15px;
+            margin: 12px 0;
+            border: 30%;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #F48FB1, #EC407A);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(236, 64, 122, 0.4);
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(236, 64, 122, 0.6);
+        }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- YouTube Video Background -->
+  <div class="video-bg">
+    <video autoplay muted loop playsinline id="bgVideo">
+        <source src="source.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+</div>
+
+<div class="overlay"></div>
+
+    <!-- Content -->
+    <div class="page-wrapper">
+        <div class="container">
+            <h1 style="font-family: 'Times New Roman', Times, serif; color: #51115a;">FEMORA</h1>
+            <p>Women Health Care Tracking and Monitoring System</p>
+
+            <div class="feature-grid">
+
+                <div class="feature-card" onclick="scrollToSection('calendar')">
+                    <div class="icon"></div>
+                    <h3>Care Calendar</h3>
+                    <p>Track periods, fertile window and ovulation with smart predictions.</p>
+                    <button onclick="event.stopPropagation(); location.href='calender.html'">Care Calendar</button>
+                </div>
+
+                <div class="feature-card" onclick="scrollToSection('reminder')">
+                    <div class="icon"></div>
+                    <h3>Reminder Scheduler</h3>
+                    <p>Never miss medicines, water intake or doctor appointments.</p>
+                    <button onclick="event.stopPropagation(); window.location.href='http://localhost:4000/remainders.html' ">Open Reminders</button>
+                </div>
+
+                <div class="feature-card" onclick="scrollToSection('hospitals')">
+                    <div class="icon"></div>
+                    <h3>Nearby Hospitals</h3>
+                    <p>Locate nearby gynecologists, hospitals and emergency services.</p>
+                    <button onclick="event.stopPropagation(); location.href='maps.html'">Find Hospitals</button>
+                </div>
+
+                <div class="feature-card" onclick="scrollToSection('chatbot')">
+                    <div class="icon"></div>
+                    <h3>Health Bot</h3>
+                    <p>Ask health-related questions and receive instant guidance.</p>
+                    <button onclick="event.stopPropagation(); location.href='bot.html'">Open Health Bot</button>
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+    </div>
+
+    <script>
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    </script>
+
+</body>
+
+</html>

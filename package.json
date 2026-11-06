@@ -1,0 +1,22 @@
+{
+  "name": "women-health-bot",
+  "version": "1.0.0",
+  "description": "Women's health chatbot server",
+  "main": "bot1.js",
+  "scripts": {
+    "start": "node remainders_server.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.20.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "express-session": "^1.19.0",
+    "node-cron": "^4.6.0",
+    "twilio": "^6.0.2"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.4"
+  }
+}

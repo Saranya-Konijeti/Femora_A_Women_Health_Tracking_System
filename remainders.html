@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Medicine Reminders</title>
+<style>
+  :root {
+    --plum: #4a2545;
+    --plum-deep: #2f1630;
+    --rose: #d1477a;
+    --rose-soft: #f6e4ec;
+    --cream: #fdf9f6;
+    --ink: #33242f;
+    --muted: #8a7583;
+    --line: #ecdfe4;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+  }
+  header {
+    background: linear-gradient(120deg, var(--plum-deep), var(--plum));
+    color: #fff;
+    padding: 28px 24px 22px;
+  }
+  header h1 { margin: 0 0 4px; font-size: 1.5rem; font-weight: 700; }
+  header p { margin: 0; color: #e8d7e4; font-size: 0.92rem; }
+
+  .wrap {
+    max-width: 720px;
+    margin: 28px auto;
+    padding: 0 20px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 22px;
+  }
+
+  .card h2 {
+    margin: 0 0 16px;
+    font-size: 1.05rem;
+    color: var(--plum-deep);
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 14px 0 6px;
+  }
+
+  input[type="text"], input[type="tel"], input[type="time"], input[type="number"], input[type="date"], select {
+    width: 100%;
+    padding: 11px 13px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+  }
+  input:focus, select:focus { border-color: var(--rose); }
+
+  .time-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .time-row input { flex: 1; }
+  .time-row button {
+    background: var(--rose-soft);
+    color: var(--rose);
+    border: none;
+    border-radius: 8px;
+    width: 36px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  #add-time-btn {
+    margin-top: 4px;
+    background: none;
+    border: 1.5px dashed var(--line);
+    color: var(--rose);
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .channel-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .channel-chip {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .channel-chip.active {
+    background: var(--plum-deep);
+    border-color: var(--plum-deep);
+    color: #fff;
+  }
+
+  .freq-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .freq-chip {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .freq-chip.active {
+    background: var(--rose);
+    border-color: var(--rose);
+    color: #fff;
+  }
+
+  #once-date-wrap { display: none; }
+
+  .help-text {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  button.submit-btn {
+    width: 100%;
+    margin-top: 20px;
+    background: var(--rose);
+    color: #fff;
+    border: none;
+    padding: 13px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button.submit-btn:hover { opacity: 0.92; }
+
+  #form-status {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    min-height: 18px;
+  }
+  #form-status.success { color: #2c7a4b; }
+  #form-status.error { color: #b3324a; }
+
+  .reminder-item {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .reminder-name { font-weight: 700; color: var(--plum-deep); font-size: 0.95rem; }
+  .reminder-meta { font-size: 0.8rem; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+  .delete-btn {
+    background: none;
+    border: none;
+    color: var(--rose);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .empty-note { color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Medicine Reminders</h1>
+  <p>Set a medicine schedule and get reminded by SMS or WhatsApp, right on time.</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <h2>Add a new reminder</h2>
+    <form id="reminder-form">
+      <label>Your name</label>
+      <input type="text" id="patientName" placeholder="e.g. Saranya" required />
+
+      <label>Phone number (with country code)</label>
+      <input type="tel" id="phone" placeholder="e.g. +919876543210" required />
+      <div class="help-text">Include the country code, starting with +. Example: +91 for India.</div>
+
+      <label>Medicine name</label>
+      <input type="text" id="medicineName" placeholder="e.g. Folic Acid 5mg" required />
+
+      <label>Dosage / notes (optional)</label>
+      <input type="text" id="dosage" placeholder="e.g. 1 tablet after food" />
+
+      <label>Time(s) to take the medicine</label>
+      <div id="time-list">
+        <div class="time-row">
+          <input type="time" class="med-time" required />
+          <button type="button" onclick="removeTimeRow(this)">✕</button>
+        </div>
+      </div>
+      <button type="button" id="add-time-btn" onclick="addTimeRow()">+ Add another time</button>
+
+      <label>Remind me before actual time by (minutes)</label>
+      <input type="number" id="remindBefore" min="0" max="120" value="10" />
+      <div class="help-text">This is the gap between the reminder and the actual dose time. Set 0 to be reminded exactly at the dose time.</div>
+
+      <label>How often</label>
+      <div class="freq-row">
+        <div class="freq-chip active" data-freq="daily">Every day</div>
+        <div class="freq-chip" data-freq="once">Just once</div>
+      </div>
+      <div id="once-date-wrap">
+        <label>Date</label>
+        <input type="date" id="onceDate" />
+      </div>
+
+      <label>Send reminder via</label>
+      <div class="channel-row">
+        <div class="channel-chip active" data-channel="sms">SMS</div>
+        <div class="channel-chip" data-channel="whatsapp">WhatsApp</div>
+        <div class="channel-chip" data-channel="call">Voice Call</div>
+        <div class="channel-chip" data-channel="all">All Three</div>
+      </div>
+
+      <button type="submit" class="submit-btn">Save reminder</button>
+      <div id="form-status"></div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Your active reminders</h2>
+    <div id="reminder-list">
+      <div class="empty-note">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = ""; // same origin — server serves this file too
+
+  let activeFreq = "daily";
+  let activeChannel = "sms";
+
+  document.querySelectorAll(".freq-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll(".freq-chip").forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+      activeFreq = chip.dataset.freq;
+      document.getElementById("once-date-wrap").style.display =
+        activeFreq === "once" ? "block" : "none";
+    });
+  });
+
+  document.querySelectorAll(".channel-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll(".channel-chip").forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+      activeChannel = chip.dataset.channel;
+    });
+  });
+
+  function addTimeRow() {
+    const list = document.getElementById("time-list");
+    const row = document.createElement("div");
+    row.className = "time-row";
+    row.innerHTML = `<input type="time" class="med-time" required /><button type="button" onclick="removeTimeRow(this)">✕</button>`;
+    list.appendChild(row);
+  }
+
+  function removeTimeRow(btn) {
+    const list = document.getElementById("time-list");
+    if (list.children.length > 1) {
+      btn.parentElement.remove();
+    }
+  }
+
+  document.getElementById("reminder-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const statusEl = document.getElementById("form-status");
+    statusEl.className = "";
+    statusEl.textContent = "Saving...";
+
+    const times = Array.from(document.querySelectorAll(".med-time")).map((i) => i.value).filter(Boolean);
+    if (!times.length) {
+      statusEl.className = "error";
+      statusEl.textContent = "Please add at least one time.";
+      return;
+    }
+
+    const payload = {
+      patientName: document.getElementById("patientName").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      medicineName: document.getElementById("medicineName").value.trim(),
+      dosage: document.getElementById("dosage").value.trim(),
+      times: times,
+      remindBeforeMinutes: parseInt(document.getElementById("remindBefore").value || "0", 10),
+      frequency: activeFreq,
+      onceDate: activeFreq === "once" ? document.getElementById("onceDate").value : null,
+      channel: activeChannel,
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/api/reminders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to save reminder.");
+
+      statusEl.className = "success";
+      statusEl.textContent = "Reminder saved! You'll be notified at the scheduled time.";
+      document.getElementById("reminder-form").reset();
+      document.getElementById("time-list").innerHTML =
+        '<div class="time-row"><input type="time" class="med-time" required /><button type="button" onclick="removeTimeRow(this)">✕</button></div>';
+      loadReminders();
+    } catch (err) {
+      statusEl.className = "error";
+      statusEl.textContent = err.message;
+    }
+  });
+
+  async function loadReminders() {
+    const listEl = document.getElementById("reminder-list");
+    try {
+      const res = await fetch(`${API_BASE}/api/reminders`);
+      const reminders = await res.json();
+      if (!reminders.length) {
+        listEl.innerHTML = '<div class="empty-note">No reminders set yet.</div>';
+        return;
+      }
+      listEl.innerHTML = "";
+      reminders.forEach((r) => {
+        const div = document.createElement("div");
+        div.className = "reminder-item";
+        div.innerHTML = `
+          <div>
+            <div class="reminder-name">${escapeHtml(r.medicineName)}</div>
+            <div class="reminder-meta">
+              For ${escapeHtml(r.patientName)} · ${escapeHtml(r.phone)}<br/>
+              Times: ${r.times.map(escapeHtml).join(", ")} · Remind ${r.remindBeforeMinutes} min before<br/>
+              ${r.frequency === "once" ? "Once on " + escapeHtml(r.onceDate || "") : "Every day"} · via ${escapeHtml(r.channel.toUpperCase())}
+              ${r.dosage ? "<br/>" + escapeHtml(r.dosage) : ""}
+            </div>
+          </div>
+          <button class="delete-btn" onclick="deleteReminder('${r.id}')">Delete</button>
+        `;
+        listEl.appendChild(div);
+      });
+    } catch (err) {
+      listEl.innerHTML = '<div class="empty-note">Could not load reminders. Is the server running?</div>';
+    }
+  }
+
+  async function deleteReminder(id) {
+    await fetch(`${API_BASE}/api/reminders/${id}`, { method: "DELETE" });
+    loadReminders();
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  loadReminders();
+</script>
+
+</body>
+</html>

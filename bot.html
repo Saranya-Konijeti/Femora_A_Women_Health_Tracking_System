@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Women's Health Bot</title>
+
+    <link rel="stylesheet" href="bot.css">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+
+    <div class="header">
+
+        <button class="back-btn" onclick="history.back()">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div>
+
+            <h1>Femora AI</h1>
+
+            <p>Your AI Women's Healthcare Assistant</p>
+
+        </div>
+
+    </div>
+
+    <!-- Suggestion Buttons -->
+
+    <div class="suggestions">
+
+        <button onclick="fillQuestion('Why is my period delayed?')">
+            Period Delay
+        </button>
+
+        <button onclick="fillQuestion('How to reduce period pain?')">
+            Period Pain
+        </button>
+
+        <button onclick="fillQuestion('What are PCOS symptoms?')">
+            PCOS
+        </button>
+
+        <button onclick="fillQuestion('Early pregnancy symptoms')">
+            Pregnancy
+        </button>
+
+        <button onclick="fillQuestion('Foods to eat during periods')">
+            Nutrition
+        </button>
+
+    </div>
+
+    <!-- Chat Area -->
+
+    <div id="chat-box">
+
+        <div class="bot-message">
+
+            <div class="avatar">
+                🤖
+            </div>
+
+            <div class="message">
+
+                <h4>Femora AI</h4>
+
+                Hello! 👋
+
+                <br><br>
+
+                I'm your Women's Healthcare Assistant.
+
+                <br><br>
+
+                Ask me about
+
+                <ul>
+
+                    <li>Periods</li>
+
+                    <li>PCOS</li>
+
+                    <li>Pregnancy</li>
+
+                    <li>Ovulation</li>
+
+                    <li>Women's Hygiene</li>
+
+                    <li>Nutrition</li>
+
+                </ul>
+
+                <br>
+
+                <b>Note:</b> I provide educational information only and cannot replace a doctor.
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Input -->
+
+    <div class="input-section">
+
+        <input
+            type="text"
+            id="userInput"
+            placeholder="Ask your health question..."
+        >
+
+        <button onclick="sendMessage()">
+
+            <i class="fa-solid fa-paper-plane"></i>
+
+        </button>
+
+    </div>
+
+</div>
+
+<script src="bot2.js"></script>
+
+</body>
+</html>
