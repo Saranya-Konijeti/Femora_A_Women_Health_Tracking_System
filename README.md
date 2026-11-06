@@ -163,14 +163,7 @@ To stop the application, press `Ctrl + C` in the terminal.
 - Stop the previously running server using `Ctrl + C`.
 - Start the application again using `npm start`.
 
-## Security Notes
-
-- Do not upload API keys or Twilio credentials to GitHub.
-- Keep `.env` and `.env.medicine` private.
-- Do not upload personal user information or reminder data.
-- The application currently uses JSON files for storing account and reminder information. It is designed for local development and has not been configured for production deployment.
 
 ## Author
 
-Developed as a Women's Health Mini Project.
-
+Konijeti Saranya
